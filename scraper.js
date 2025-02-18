@@ -1,10 +1,10 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 const fs = require('fs').promises;
 const path = require('path');
 
 async function scrapeDonations() {
-    const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    const browser = await chromium.launch({
+        args: ['--no-sandbox']
     });
     try {
         const donations = {
@@ -17,17 +17,17 @@ async function scrapeDonations() {
         // Scrape Fallen Patriots
         const fallenPatriotsPage = await browser.newPage();
         await fallenPatriotsPage.goto('https://donate.fallenpatriots.org/campaign/2025-chaotic-good/c660862', {
-            waitUntil: 'networkidle0'
+            waitUntil: 'networkidle'
         });
-        const fallenPatriotsAmount = await fallenPatriotsPage.$eval('.sc-campaign-progress_raised', el => el.textContent);
+        const fallenPatriotsAmount = await fallenPatriotsPage.locator('.sc-campaign-progress_raised').textContent();
         donations.fallenPatriots = parseFloat(fallenPatriotsAmount.replace(/[$,]/g, ''));
 
         // Scrape YouTube
         const youtubePage = await browser.newPage();
         await youtubePage.goto('https://www.youtube.com/live/1xhV_xJU9Z8?si=yZ7o0ckA-Bry-O3b', {
-            waitUntil: 'networkidle0'
+            waitUntil: 'networkidle'
         });
-        const youtubeAmount = await youtubePage.$eval('#amount-raised > yt-formatted-string', el => el.textContent);
+        const youtubeAmount = await youtubePage.locator('#amount-raised > yt-formatted-string').textContent();
         donations.youtube = parseFloat(youtubeAmount.replace(/[$,]/g, ''));
 
         donations.total = donations.fallenPatriots + donations.youtube;
