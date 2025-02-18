@@ -23,24 +23,20 @@ def scrape_donations():
             print("Navigating to Fallen Patriots page...")
             page.goto("https://donate.fallenpatriots.org/campaign/2025-chaotic-good/c660862")
             
-            # Wait for the specific element and print page content for debugging
+            # Wait for and get the donation amount using XPath
             print("Waiting for donation amount element...")
-            page.wait_for_selector(".sc-campaign-progress_raised", timeout=30000)
+            fallen_patriots_xpath = "/html/body/div[2]/div/ui-view/div[2]/div[1]/div[2]/div[2]/div[1]/div/section/div[4]/div/div/div[2]/div[1]/div/div/div/span[1]"
+            page.wait_for_selector(f"xpath={fallen_patriots_xpath}", timeout=30000)
             
-            # Try multiple potential selectors
-            amount_element = (
-                page.query_selector(".sc-campaign-progress_raised") or 
-                page.query_selector("[data-qa='progress-raised']") or
-                page.query_selector(".campaign-progress_raised")
-            )
-            
+            amount_element = page.query_selector(f"xpath={fallen_patriots_xpath}")
             if amount_element:
                 fallen_patriots_amount = amount_element.text_content()
                 print(f"Found amount: {fallen_patriots_amount}")
-                donations["fallenPatriots"] = float(fallen_patriots_amount.replace("$", "").replace(",", ""))
+                # Remove any non-numeric characters except decimal point
+                amount_str = ''.join(c for c in fallen_patriots_amount if c.isdigit() or c == '.')
+                donations["fallenPatriots"] = float(amount_str)
             else:
-                print("Could not find donation amount element")
-                # For debugging, let's print the page content
+                print("Could not find Fallen Patriots donation amount element")
                 print("Page content:", page.content())
             
             page.close()
@@ -50,15 +46,18 @@ def scrape_donations():
             print("Navigating to YouTube page...")
             page.goto("https://www.youtube.com/live/1xhV_xJU9Z8")
             
-            # Wait for the specific element
+            # Wait for and get the YouTube amount using XPath
             print("Waiting for YouTube amount element...")
-            page.wait_for_selector("#amount-raised", timeout=30000)
+            youtube_xpath = "/html/body/ytd-app/div[1]/ytd-page-manager/ytd-watch-flexy/div[5]/div[2]/div/div[3]/ytd-donation-shelf-renderer/div[2]/div[2]"
+            page.wait_for_selector(f"xpath={youtube_xpath}", timeout=30000)
             
-            amount_element = page.query_selector("#amount-raised > yt-formatted-string")
+            amount_element = page.query_selector(f"xpath={youtube_xpath}")
             if amount_element:
                 youtube_amount = amount_element.text_content()
                 print(f"Found YouTube amount: {youtube_amount}")
-                donations["youtube"] = float(youtube_amount.replace("$", "").replace(",", ""))
+                # Remove any non-numeric characters except decimal point
+                amount_str = ''.join(c for c in youtube_amount if c.isdigit() or c == '.')
+                donations["youtube"] = float(amount_str)
             else:
                 print("Could not find YouTube amount element")
                 print("Page content:", page.content())
