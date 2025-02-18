@@ -23,41 +23,58 @@ def scrape_donations():
             print("Navigating to Fallen Patriots page...")
             page.goto("https://donate.fallenpatriots.org/campaign/2025-chaotic-good/c660862")
             
-            # Wait for and get the donation amount using class name
+            # Wait for and get the donation amount using exact class name
             print("Waiting for donation amount element...")
-            # Try different class combinations to find the element
-            selectors = [
-                ".sc-campaign-progress_raised.ng-binding",
-                "[class='sc-campaign-progress_raised ng-binding']",
-                "[class*='sc-campaign-progress_raised'][class*='ng-binding']"
-            ]
+            # Try to find the element with the exact class combination
+            selector = '[class="sc-campaign-progress_raised ng-binding"]'
             
-            amount_element = None
-            for selector in selectors:
-                print(f"Trying selector: {selector}")
-                try:
-                    page.wait_for_selector(selector, timeout=10000)
-                    amount_element = page.query_selector(selector)
+            try:
+                print(f"Waiting for selector: {selector}")
+                # Wait longer for the element to appear
+                page.wait_for_selector(selector, timeout=30000)
+                amount_element = page.query_selector(selector)
+                
+                if amount_element:
+                    fallen_patriots_amount = amount_element.text_content()
+                    print(f"Found amount: {fallen_patriots_amount}")
+                    # Remove any non-numeric characters except decimal point
+                    amount_str = ''.join(c for c in fallen_patriots_amount if c.isdigit() or c == '.')
+                    donations["fallenPatriots"] = float(amount_str)
+                else:
+                    print("Could not find element after waiting")
+                    # Try evaluating JavaScript to find the element
+                    amount_element = page.evaluate('''
+                        () => {
+                            const elements = document.getElementsByClassName('sc-campaign-progress_raised ng-binding');
+                            return elements.length > 0 ? elements[0].textContent : null;
+                        }
+                    ''')
                     if amount_element:
-                        print(f"Found element with selector: {selector}")
-                        break
-                except Exception as e:
-                    print(f"Selector {selector} failed: {str(e)}")
-            
-            if amount_element:
-                fallen_patriots_amount = amount_element.text_content()
-                print(f"Found amount: {fallen_patriots_amount}")
-                # Remove any non-numeric characters except decimal point
-                amount_str = ''.join(c for c in fallen_patriots_amount if c.isdigit() or c == '.')
-                donations["fallenPatriots"] = float(amount_str)
-            else:
-                print("Could not find Fallen Patriots donation amount element")
-                # For debugging, let's get all elements with similar classes
-                print("Looking for similar elements:")
-                elements = page.query_selector_all("[class*='sc-campaign-progress']")
-                for elem in elements:
-                    print(f"Found element with class: {elem.get_attribute('class')}")
-                print("Page content:", page.content())
+                        print(f"Found amount via JavaScript: {amount_element}")
+                        amount_str = ''.join(c for c in amount_element if c.isdigit() or c == '.')
+                        donations["fallenPatriots"] = float(amount_str)
+                    else:
+                        print("Could not find element via JavaScript either")
+                        print("Page content:", page.content())
+            except Exception as e:
+                print(f"Error finding element: {str(e)}")
+                print("Trying alternative method...")
+                # Try one last time with evaluate
+                try:
+                    amount_element = page.evaluate('''
+                        () => {
+                            const elements = Array.from(document.getElementsByClassName('sc-campaign-progress_raised'));
+                            return elements.find(el => el.classList.contains('ng-binding'))?.textContent;
+                        }
+                    ''')
+                    if amount_element:
+                        print(f"Found amount via alternative JavaScript: {amount_element}")
+                        amount_str = ''.join(c for c in amount_element if c.isdigit() or c == '.')
+                        donations["fallenPatriots"] = float(amount_str)
+                    else:
+                        print("Could not find element via alternative method")
+                except Exception as e2:
+                    print(f"Error in alternative method: {str(e2)}")
             
             page.close()
             
