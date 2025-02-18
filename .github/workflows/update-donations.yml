@@ -4,9 +4,16 @@ on:
   schedule:
     - cron: '*/5 * * * *'  # Runs every 5 minutes
   workflow_dispatch:  # Allows manual triggering
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/donations.json'  # Only run on changes to donations.json
 
 jobs:
   update-data:
+    # Skip if commit message contains [skip ci] or [ci skip]
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Gives permission to push to the repository
@@ -61,4 +68,4 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        npm run deploy
+        npm run deploy -- -m "Deploy website [skip ci]"
