@@ -23,12 +23,27 @@ def scrape_donations():
             print("Navigating to Fallen Patriots page...")
             page.goto("https://donate.fallenpatriots.org/campaign/2025-chaotic-good/c660862")
             
-            # Wait for and get the donation amount using CSS selector
+            # Wait for and get the donation amount using class name
             print("Waiting for donation amount element...")
-            tiltify_selector = ".sc-campaign-progress_raised"
-            page.wait_for_selector(tiltify_selector, timeout=30000)
+            # Try different class combinations to find the element
+            selectors = [
+                ".sc-campaign-progress_raised.ng-binding",
+                "[class='sc-campaign-progress_raised ng-binding']",
+                "[class*='sc-campaign-progress_raised'][class*='ng-binding']"
+            ]
             
-            amount_element = page.query_selector(tiltify_selector)
+            amount_element = None
+            for selector in selectors:
+                print(f"Trying selector: {selector}")
+                try:
+                    page.wait_for_selector(selector, timeout=10000)
+                    amount_element = page.query_selector(selector)
+                    if amount_element:
+                        print(f"Found element with selector: {selector}")
+                        break
+                except Exception as e:
+                    print(f"Selector {selector} failed: {str(e)}")
+            
             if amount_element:
                 fallen_patriots_amount = amount_element.text_content()
                 print(f"Found amount: {fallen_patriots_amount}")
@@ -37,6 +52,11 @@ def scrape_donations():
                 donations["fallenPatriots"] = float(amount_str)
             else:
                 print("Could not find Fallen Patriots donation amount element")
+                # For debugging, let's get all elements with similar classes
+                print("Looking for similar elements:")
+                elements = page.query_selector_all("[class*='sc-campaign-progress']")
+                for elem in elements:
+                    print(f"Found element with class: {elem.get_attribute('class')}")
                 print("Page content:", page.content())
             
             page.close()
