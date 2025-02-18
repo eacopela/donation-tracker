@@ -9,13 +9,31 @@ function App() {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/eacopela/donation-tracker/main/data/donations.json');
+        // In development, fetch from local file
+        const url = process.env.NODE_ENV === 'development' 
+          ? '/data/donations.json' 
+          : 'https://raw.githubusercontent.com/eacopela/donation-tracker/main/data/donations.json';
+        
+        const response = await fetch(url);
         const data = await response.json();
         setDonations(data);
-        setLastUpdated(new Date(data.lastUpdated).toLocaleString());
+        
+        // Convert to Eastern Time
+        const date = new Date(data.lastUpdated);
+        const options = {
+          timeZone: 'America/New_York',
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          second: 'numeric',
+          hour12: true
+        };
+        setLastUpdated(date.toLocaleString('en-US', options) + ' ET');
       } catch (err) {
-        setError('Error fetching donation data');
         console.error('Error:', err);
+        setError('Error fetching donation data');
       }
     };
 
