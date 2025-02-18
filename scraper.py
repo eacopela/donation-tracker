@@ -23,12 +23,12 @@ def scrape_donations():
             print("Navigating to Fallen Patriots page...")
             page.goto("https://donate.fallenpatriots.org/campaign/2025-chaotic-good/c660862")
             
-            # Wait for and get the donation amount using XPath
+            # Wait for and get the donation amount using CSS selector
             print("Waiting for donation amount element...")
-            fallen_patriots_xpath = "/html/body/div[2]/div/ui-view/div[2]/div[1]/div[2]/div[2]/div[1]/div/section/div[4]/div/div/div[2]/div[1]/div/div/div/span[1]"
-            page.wait_for_selector(f"xpath={fallen_patriots_xpath}", timeout=30000)
+            tiltify_selector = ".sc-campaign-progress_raised"
+            page.wait_for_selector(tiltify_selector, timeout=30000)
             
-            amount_element = page.query_selector(f"xpath={fallen_patriots_xpath}")
+            amount_element = page.query_selector(tiltify_selector)
             if amount_element:
                 fallen_patriots_amount = amount_element.text_content()
                 print(f"Found amount: {fallen_patriots_amount}")
