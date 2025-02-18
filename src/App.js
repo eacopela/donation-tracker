@@ -31,40 +31,25 @@ function App() {
 
   if (error) {
     return <div className="App error">
-      <h1>Donation Tracker</h1>
       <p>{error}</p>
     </div>;
   }
 
   if (!donations) {
     return <div className="App loading">
-      <h1>Donation Tracker</h1>
-      <p>Loading donation data...</p>
+      <p>Loading...</p>
     </div>;
   }
 
   return (
     <div className="App">
-      <h1>Donation Tracker</h1>
-      
-      <div className="donations">
-        <div className="donation-card">
-          <h2>Fallen Patriots</h2>
-          <p className="amount">${donations.fallenPatriots.toLocaleString()}</p>
-        </div>
-
-        <div className="donation-card">
-          <h2>YouTube</h2>
-          <p className="amount">${donations.youtube.toLocaleString()}</p>
-        </div>
-
-        <div className="donation-card total">
-          <h2>Total</h2>
-          <p className="amount">${donations.total.toLocaleString()}</p>
-        </div>
+      <div className="total">
+        <span className="dollar">$</span>
+        <span className="amount">{donations.total.toLocaleString()}</span>
       </div>
-
-      <p className="last-updated">Last updated: {lastUpdated}</p>
+      <div className="last-updated">
+        Last updated: {lastUpdated}
+      </div>
     </div>
   );
 }

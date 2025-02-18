@@ -1,9 +1,13 @@
 .App {
   text-align: center;
-  padding: 2rem;
   min-height: 100vh;
   background-color: #1a1a1a;
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 h1 {
@@ -39,14 +43,12 @@ h1 {
   color: #61dafb;
 }
 
-.amount {
-  font-size: 2rem;
-  margin: 0;
-  font-weight: bold;
-  color: #4caf50;
-}
-
 .total {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: baseline;
   background: #003366;
 }
 
@@ -54,14 +56,28 @@ h1 {
   color: #61dafb;
 }
 
+.dollar {
+  color: #4caf50;
+  font-size: 4rem;
+  margin-right: 0.5rem;
+}
+
+.amount {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: bold;
+  color: #4caf50;
+}
+
 .last-updated {
   color: #888;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   margin-top: 2rem;
 }
 
 .error {
   color: #ff6b6b;
+  font-size: 1.5rem;
 }
 
 .loading {
@@ -70,6 +86,7 @@ h1 {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  font-size: 1.5rem;
 }
 
 @media (max-width: 768px) {
@@ -81,5 +98,17 @@ h1 {
   .donation-card {
     width: 100%;
     max-width: 300px;
+  }
+  
+  .total {
+    font-size: 3rem;
+  }
+  
+  .dollar {
+    font-size: 2.5rem;
+  }
+  
+  .last-updated {
+    font-size: 1rem;
   }
 }
