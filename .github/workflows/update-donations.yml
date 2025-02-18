@@ -74,7 +74,9 @@ jobs:
         
     - name: Install website dependencies
       if: steps.check_changes.outputs.changes == 'true'
-      run: npm ci --production --prefer-offline
+      run: |
+        npm ci --production --prefer-offline
+        npm install gh-pages --no-save  # Install gh-pages for deployment
         
     - name: Build and deploy website
       if: steps.check_changes.outputs.changes == 'true'
