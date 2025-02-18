@@ -2,6 +2,7 @@
   "name": "donation-tracker",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://eacopela.github.io/donation-tracker",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -39,6 +40,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "homepage": "https://eacopela.github.io/donation-tracker"
+  }
 }

@@ -2,67 +2,69 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [donations, setDonations] = useState({
-    fallenPatriots: 0,
-    youtube: 0,
-    total: 0,
-    lastUpdated: null
-  });
-
-  const fetchDonations = async () => {
-    try {
-      const response = await fetch('data/donations.json');
-      const data = await response.json();
-      setDonations(data);
-    } catch (error) {
-      console.error('Error fetching donations:', error);
-    }
-  };
+  const [donations, setDonations] = useState(null);
+  const [error, setError] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/eacopela/donation-tracker/main/data/donations.json');
+        const data = await response.json();
+        setDonations(data);
+        setLastUpdated(new Date(data.lastUpdated).toLocaleString());
+      } catch (err) {
+        setError('Error fetching donation data');
+        console.error('Error:', err);
+      }
+    };
+
+    // Fetch immediately
     fetchDonations();
-    const interval = setInterval(fetchDonations, 60 * 1000); // Check for updates every minute
+
+    // Then fetch every minute
+    const interval = setInterval(fetchDonations, 60000);
+
+    // Cleanup interval on unmount
     return () => clearInterval(interval);
   }, []);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
+  if (error) {
+    return <div className="App error">
+      <h1>Donation Tracker</h1>
+      <p>{error}</p>
+    </div>;
+  }
 
-  const formatLastUpdated = (dateString) => {
-    if (!dateString) return 'Never';
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
+  if (!donations) {
+    return <div className="App loading">
+      <h1>Donation Tracker</h1>
+      <p>Loading donation data...</p>
+    </div>;
+  }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Donation Tracker</h1>
-        <div className="donation-container">
-          <div className="donation-item">
-            <h2>Fallen Patriots</h2>
-            <p>{formatCurrency(donations.fallenPatriots)}</p>
-          </div>
-          <div className="donation-item">
-            <h2>YouTube</h2>
-            <p>{formatCurrency(donations.youtube)}</p>
-          </div>
-          <div className="donation-item total">
-            <h2>Total Donations</h2>
-            <p>{formatCurrency(donations.total)}</p>
-          </div>
+      <h1>Donation Tracker</h1>
+      
+      <div className="donations">
+        <div className="donation-card">
+          <h2>Fallen Patriots</h2>
+          <p className="amount">${donations.fallenPatriots.toLocaleString()}</p>
         </div>
-        <p className="last-updated">
-          Last updated: {formatLastUpdated(donations.lastUpdated)}
-        </p>
-        <p className="update-note">
-          (Updates every minute)
-        </p>
-      </header>
+
+        <div className="donation-card">
+          <h2>YouTube</h2>
+          <p className="amount">${donations.youtube.toLocaleString()}</p>
+        </div>
+
+        <div className="donation-card total">
+          <h2>Total</h2>
+          <p className="amount">${donations.total.toLocaleString()}</p>
+        </div>
+      </div>
+
+      <p className="last-updated">Last updated: {lastUpdated}</p>
     </div>
   );
 }
