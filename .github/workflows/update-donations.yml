@@ -83,4 +83,5 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        npm run deploy -- -m "Deploy website [skip ci]"
+        git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+        npm run deploy -- -u "github-actions-bot <support+actions@github.com>" -m "Deploy website [skip ci]"
