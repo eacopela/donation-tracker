@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import json
 from datetime import datetime
 import os
+from zoneinfo import ZoneInfo
 
 def scrape_donations():
     with sync_playwright() as p:
@@ -14,7 +15,7 @@ def scrape_donations():
             "fallenPatriots": 0,
             "youtube": 0,
             "total": 0,
-            "lastUpdated": datetime.now().isoformat()
+            "lastUpdated": datetime.now(ZoneInfo("America/New_York")).isoformat()
         }
         
         try:
