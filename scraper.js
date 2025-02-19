@@ -28,7 +28,7 @@ async function scrapeDonations() {
 
         // Scrape YouTube
         const youtubePage = await browser.newPage();
-        await youtubePage.goto('https://www.youtube.com/live/1xhV_xJU9Z8?si=yZ7o0ckA-Bry-O3b', {
+        await youtubePage.goto('https://www.youtube.com/live/HFtyL3RedQE?si=YeC4zridcQeN-IRC', {
             waitUntil: 'networkidle'
         });
         const youtubeAmount = await youtubePage.locator('#amount-raised > yt-formatted-string').textContent();
