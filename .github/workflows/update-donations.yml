@@ -7,8 +7,12 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'data/donations.json'  # Only run on changes to donations.json
+    paths-ignore:
+      - 'data/donations.json'  # Don't trigger on donation data changes to avoid loops
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true  # Cancel any in-progress runs
 
 jobs:
   update-data:
