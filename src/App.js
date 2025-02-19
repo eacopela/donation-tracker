@@ -22,8 +22,8 @@ function App() {
         const data = await response.json();
         setDonations(data);
         
-        // Convert UTC to Eastern Time
-        const utcDate = new Date(data.lastUpdated);
+        // Format Eastern Time
+        const date = new Date(data.lastUpdated);
         const formatter = new Intl.DateTimeFormat('en-US', {
           timeZone: 'America/New_York',
           year: 'numeric',
@@ -34,13 +34,7 @@ function App() {
           hour12: true
         });
         
-        // Check if we're in EDT (true) or EST (false)
-        const isEDT = utcDate.toLocaleString('en-US', { 
-          timeZone: 'America/New_York', 
-          timeZoneName: 'short' 
-        }).includes('EDT');
-        
-        setLastUpdated(formatter.format(utcDate) + ' ' + (isEDT ? 'EDT' : 'EST'));
+        setLastUpdated(formatter.format(date));
       } catch (err) {
         console.error('Error:', err);
         setError('Error fetching donation data');

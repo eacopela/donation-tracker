@@ -7,11 +7,15 @@ async function scrapeDonations() {
         args: ['--no-sandbox']
     });
     try {
+        // Get current time in Eastern Time
+        const now = new Date();
+        const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+
         const donations = {
             fallenPatriots: 0,
             youtube: 0,
             total: 0,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: etTime.toISOString()
         };
 
         // Scrape Fallen Patriots
