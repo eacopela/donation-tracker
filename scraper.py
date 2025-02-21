@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright
 import json
 from datetime import datetime
 import os
-from zoneinfo import ZoneInfo
+import pytz  # Using pytz instead of zoneinfo for better Windows support
 
 def scrape_donations():
     with sync_playwright() as p:
@@ -15,7 +15,7 @@ def scrape_donations():
             "fallenPatriots": 0,
             "youtube": 0,
             "total": 0,
-            "lastUpdated": datetime.now(ZoneInfo("America/New_York")).isoformat()
+            "lastUpdated": datetime.now(pytz.timezone('US/Eastern')).isoformat()
         }
         
         try:
@@ -82,11 +82,13 @@ def scrape_donations():
             # Scrape YouTube
             page = browser.new_page()
             print("Navigating to YouTube page...")
-            page.goto("https://www.youtube.com/live/1xhV_xJU9Z8")
+            youtube_url = "https://www.youtube.com/live/B1UEoOK0Psc?si=Cigp_PVGoHf1ibCG"
+            page.goto(youtube_url)
             
             # Wait for and get the YouTube amount using XPath
             print("Waiting for YouTube amount element...")
             youtube_xpath = "/html/body/ytd-app/div[1]/ytd-page-manager/ytd-watch-flexy/div[5]/div[2]/div/div[3]/ytd-donation-shelf-renderer/div[2]/div[2]"
+            fallen_patriots_xpath = "/html/body/div[2]/div/ui-view/div[2]/div[1]/div[2]/div[2]/div[1]/div/section/div[4]/div/div/div[2]/div[1]/div/div/div/span[1]"
             page.wait_for_selector(f"xpath={youtube_xpath}", timeout=30000)
             
             amount_element = page.query_selector(f"xpath={youtube_xpath}")

@@ -9,10 +9,8 @@ function App() {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        // In development, fetch from public folder, in production from GitHub
-        const url = process.env.NODE_ENV === 'development' 
-          ? '/donation-tracker/donations.json'
-          : 'https://raw.githubusercontent.com/eacopela/donation-tracker/main/data/donations.json';
+        // In development, fetch from local data folder, in production from GitHub
+        const url = 'https://raw.githubusercontent.com/eacopela/donation-tracker/main/data/donations.json';
         
         console.log('Fetching from:', url); // Debug log
         const response = await fetch(url);

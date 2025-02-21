@@ -65,13 +65,13 @@ jobs:
       run: |
         git diff --quiet data/donations.json || echo "changes=true" >> $GITHUB_OUTPUT
       
-    - name: Commit data changes
+    - name: Commit and push if changed
       if: steps.check_changes.outputs.changes == 'true'
       run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
         git add data/donations.json
-        git commit -m "Update donation data [skip ci]"
+        git commit -m "Update donation amounts" || exit 0
         git push
         
     - name: Setup Node.js
